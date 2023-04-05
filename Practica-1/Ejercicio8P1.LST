@@ -1,0 +1,42 @@
+
+								página: 1 
+
+ Listado Fuente: Ejercicio8P1.LST
+ Programa Fuente en: Ejercicio8P1.ASM
+ Fecha: Tue Apr 04 17:42:26 2023
+
+  Dir. Codigo maquina	 Linea 	 Codigo en lenguaje ensamble
+
+			      1	ORG 1000H
+ 1000 01		      2	b db 00000001b
+			      3	
+			      4	; Memoria de Instrucciones
+			      5	ORG 3000H ; Subrutina MUL
+			      6	
+ 3000 80 F9 00		      7	ROTARIZQ: CMP CL, 0 ; decremento 7 hasta que me 
+				lo rote
+ 3003 74 06		      8	JZ FIN
+ 3005 02 C0		      9	add AL, AL ; le voy sumando lo que tenia, se va 
+				corriendo 1
+ 3007 FE C9		     10	DEC CL 
+ 3009 75 F5		     11	JNZ ROTARIZQ
+			     12	
+ 300B C3		     13	FIN: RET
+			     14	
+			     15	ORG 2000H ; Programa principal
+ 2000 8A 06 00 10	     16	MOV AL, b ;por valor 
+ 2004 B1 07		     17	MOV CL, 7
+ 2006 E8 00 30		     18	CALL ROTARIZQ
+			     19	
+			     20	
+ 2009 F4		     21	HLT
+			     22	END
+
+
+ S I M B O L O S:
+
+ Nombre:	Tipo:		Valor:
+
+ b       	Mem. Byte	1000h
+ ROTARIZQ	Etiqueta	3000h
+ FIN     	Etiqueta	300Bh

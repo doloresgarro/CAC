@@ -1,0 +1,45 @@
+
+								página: 1 
+
+ Listado Fuente: Ejercicio7P1.LST
+ Programa Fuente en: Ejercicio7P1.ASM
+ Fecha: Tue Apr 04 15:47:48 2023
+
+  Dir. Codigo maquina	 Linea 	 Codigo en lenguaje ensamble
+
+			      1	;  Memoria de Datos
+			      2	ORG 1000H
+ 1000 05		      3	NUM1 DB 5H
+ 1001 03		      4	NUM2 DB 3H
+			      5	
+			      6	; Memoria de Instrucciones
+			      7	ORG 3000H ; Subrutina MUL
+ 3000 80 F8 00		      8	MUL: CMP AL, 0
+ 3003 74 0B		      9	JZ FIN
+ 3005 80 F9 00		     10	CMP CL, 0
+ 3008 74 06		     11	JZ FIN
+ 300A 03 D0		     12	LAZO: ADD DX, AX
+ 300C FF C9		     13	DEC CX
+ 300E 75 FA		     14	JNZ LAZO
+ 3010 C3		     15	FIN: RET
+			     16	
+			     17	ORG 2000H ; Programa principal
+ 2000 BA 00 00		     18	MOV DX, 0
+ 2003 B4 00		     19	MOV AH, 0
+ 2005 8A 06 00 10	     20	MOV AL, NUM1
+ 2009 8A 0E 01 10	     21	MOV CL, NUM2
+			     22	
+ 200D E8 00 30		     23	CALL MUL
+ 2010 F4		     24	HLT
+			     25	END
+
+
+ S I M B O L O S:
+
+ Nombre:	Tipo:		Valor:
+
+ NUM1    	Mem. Byte	1000h
+ NUM2    	Mem. Byte	1001h
+ MUL     	Etiqueta	3000h
+ LAZO    	Etiqueta	300Ah
+ FIN     	Etiqueta	3010h

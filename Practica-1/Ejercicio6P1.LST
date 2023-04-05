@@ -1,0 +1,60 @@
+
+								página: 1 
+
+ Listado Fuente: Ejercicio6P1.LST
+ Programa Fuente en: Ejercicio6P1.ASM
+ Fecha: Tue Apr 04 15:25:24 2023
+
+  Dir. Codigo maquina	 Linea 	 Codigo en lenguaje ensamble
+
+			      1	ORG 1000H
+ 1000 1[		      2	TABLA DB DUP(2,4,6,8,10,12,14,16,18,20)
+	     02
+	     04
+	     06
+	     08
+	     0A
+	     0C
+	     0E
+	     10
+	     12
+	     14
+		      ]
+			      3	;TABLA DB 2, 14, 5, 13, 19
+ 100A 02		      4	FIN DB ?
+ 100B 02		      5	TOTAL DB ?
+ 100C 0D		      6	MAX DB 13
+			      7	
+			      8	ORG 2000H
+ 2000 B0 00		      9	MOV AL, 0
+ 2002 B1 0A		     10	MOV CL, OFFSET FIN-OFFSET TABLA
+ 2004 BB 00 10		     11	MOV BX, OFFSET TABLA
+ 2007 8A 16 0C 10	     12	MOV DL, MAX ;muevo a DL el max para comparar 
+			     13	
+ 200B 3A 17		     14	COMP: CMP DL, [BX]; comparo max con elem de tabl
+				a
+ 200D 78 02		     15	JS salta; si hay signo que no sume xq elem de ta
+				bla es mayor a max
+ 200F FE C0		     16	INC AL; incrementa xq no hay signo â†’ elem es m
+				enor a max  
+ 2011 FF C3		     17	salta: INC BX ;avanza en tabla 
+ 2013 FE C9		     18	DEC CL ; dec dimL 
+ 2015 75 F4		     19	JNZ COMP
+			     20	
+ 2017 BB 0B 10		     21	MOV BX, OFFSET TOTAL 
+ 201A 88 07		     22	MOV [BX], AL         
+			     23	
+ 201C F4		     24	HLT
+			     25	END
+
+
+ S I M B O L O S:
+
+ Nombre:	Tipo:		Valor:
+
+ TABLA   	Mem. Byte	1000h
+ FIN     	Mem. Byte	100Ah
+ TOTAL   	Mem. Byte	100Bh
+ MAX     	Mem. Byte	100Ch
+ COMP    	Etiqueta	200Bh
+ salta   	Etiqueta	2011h
