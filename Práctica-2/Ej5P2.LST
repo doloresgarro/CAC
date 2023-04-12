@@ -1,0 +1,122 @@
+
+								p�gina: 1 
+
+ Listado Fuente: Ej5P2.LST
+ Programa Fuente en: Ej5P2.ASM
+ Fecha: Wed Apr 12 20:02:21 2023
+
+  Dir. Codigo maquina	 Linea 	 Codigo en lenguaje ensamble
+
+			      1	;Modificar el programa anterior agregando una su
+				brutina llamada ES_NUM que verifique si el carac
+				ter ingresado es 
+			      2	;realmente un número. De no serlo, el programa 
+				debe mostrar el mensaje “CARACTER NO VALIDO”
+				. La subrutina debe 
+			      3	;recibir el código del caracter por REFERENCIA 
+				desde el programa principal y debe devolver vía
+				 registro el valor 0FFH en caso de 
+			      4	;tratarse de un número o el valor 00H en caso c
+				ontrario.
+			      5	
+			      6	;Tener en cuenta que el código del “0” es 3
+				0H y el del “9” es 39H.
+			      7	
+			      8	ORG 1000H
+ 1000 49 4E 47 52 45 53	      9	MSJ DB "INGRESE UN NUMERO:"
+ 1006 45 20 55 4E 20 4E
+ 100C 55 4D 45 52 4F 3A
+ 1012 49		     10	FIN DB ?
+ 1013 43 41 52 41 43 54	     11	no_valido db "CARACTER NO VALIDO"
+ 1019 45 52 20 4E 4F 20
+ 101F 56 41 4C 49 44 4F
+ 1025 43		     12	fin_no_valido db ?
+			     13	
+			     14	ORG 1500H
+ 1500 43		     15	NUM DB ?
+			     16	
+			     17	ORG 3000H
+			     18	
+ 3000 8B DA		     19	ES_NUM: MOV BX, DX
+			     20	
+ 3002 8A 0F		     21	MOV CL, [BX]                      ; muevo a CL l
+				o que tiene BX porq no puedo comparar accediendo
+				 a memoria
+			     22	
+ 3004 B5 30		     23	MOV CH, 30H                       ; muevo el 0 a
+				 CH y le voy sumando   
+ 3006 B2 39		     24	MOV DL, 39H  			    ; muevo el 
+				9 a DL para condicion de corte
+			     25	
+ 3008 3A CD		     26	loop: CMP CL, CH                  ; comparo el n
+				um con los digitos
+ 300A 74 0B		     27	JZ dig                            ; si son igual
+				es devuelvo 0FFH por registro
+ 300C B6 00		     28	MOV DH, 00H                       ; si no es dig
+				ito devuelvo 00H por registro
+ 300E FE C5		     29	INC CH 				    ; increment
+				o digito
+ 3010 3A D5		     30	CMP DL, CH                        ; si hay carry
+				 es xq se paso de 39H 
+ 3012 73 F4		     31	JNC loop
+			     32	
+ 3014 E9 19 30		     33	JMP FIN1				    ; s
+				i llega aca es porq no es dig
+
+
+
+								p�gina: 2 
+
+ 3017 B6 FF		     34	dig: MOV DH, 0FFH			    ; s
+				i salto aca es porque es dig
+			     35	
+ 3019 C3		     36	FIN1:RET 
+			     37	
+			     38	
+			     39	ORG 2000H
+			     40	
+ 2000 BB 00 10		     41	MOV BX, OFFSET MSJ                ; mueve la dir
+				ec del mensaje para imprimirlo 
+ 2003 B0 12		     42	MOV AL, OFFSET FIN-OFFSET MSJ     ; guarda la ca
+				nt de caracteres que debe imprimir 
+ 2005 CD 07		     43	INT 7                 		    ; imprime "
+				INGRESE UN NUMERO"
+ 2007 BB 00 15		     44	MOV BX, OFFSET NUM		    ; guarda la
+				 direc de num
+ 200A CD 06		     45	INT 6					    ; s
+				e ingresa desde teclado un numero en esa direc 
+ 200C B0 01		     46	MOV AL, 1				    ;
+				mueve 1 a AL porque va a imprimir un solo caract
+				er 
+			     47	
+ 200E 50		     48	PUSH AX				    ; pusheo AX
+				 y BX por si tengo que imprimir dsp
+ 200F 53		     49	PUSH BX				    ; 
+ 2010 BA 00 15		     50	MOV DX, OFFSET NUM                ; en DX pongo 
+				la direc de la variable para pasar por referenci
+				a
+ 2013 E8 00 30		     51	CALL ES_NUM
+			     52	
+ 2016 80 FA FF		     53	CMP DL, 0FFH 			    ; comparo p
+				ara ver si es dig
+ 2019 74 0A		     54	JZ SALTA				    ; s
+				i son iguales salta, es un digito
+			     55	
+ 201B BB 13 10		     56	MOV BX, OFFSET no_valido	    ; si no son
+				 iguales es letra
+ 201E B0 12		     57	MOV AL, OFFSET fin_no_valido - OFFSET no_valido
+ 2020 CD 07		     58	INT 7					    ; i
+				mprimo "CARACTER NO VALIDO"
+ 2022 E9 29 20		     59	JMP SIGUE 				    ; s
+				igue porq no tiene que imprimir 
+			     60	   
+ 2025 5B		     61	SALTA: POP BX 				    ; t
+				raigo de nuevo la cant de car que voy a imprimir
+				 
+ 2026 58		     62	POP AX				    ; traigo de
+				 nuevo la direc que voy a imprimir 
+ 2027 CD 07		     63	INT 7			    ; imprime 
+ 2029 8A 0E 00 15	     64	SIGUE: MOV CL, NUM		    ; guarda el
+				 num en CL
+ 202D CD 00		     65	INT 0					    ; t
+				ermina el programa

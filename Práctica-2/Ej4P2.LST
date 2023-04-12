@@ -1,0 +1,48 @@
+
+								página: 1 
+
+ Listado Fuente: Ej4P2.LST
+ Programa Fuente en: Ej4P2.ASM
+ Fecha: Wed Apr 12 18:58:05 2023
+
+  Dir. Codigo maquina	 Linea 	 Codigo en lenguaje ensamble
+
+			      1	ORG 1000H
+ 1000 49 4E 47 52 45 53	      2	MSJ DB "INGRESE UN NUMERO:"
+ 1006 45 20 55 4E 20 4E
+ 100C 55 4D 45 52 4F 3A
+ 1012 49		      3	FIN DB ?
+			      4	
+			      5	ORG 1500H
+ 1500 49		      6	NUM DB ?
+			      7	
+			      8	ORG 2000H
+			      9	
+ 2000 BB 00 10		     10	MOV BX, OFFSET MSJ                ; mueve la dir
+				ec del mensaje para imprimirlo 
+ 2003 B0 12		     11	MOV AL, OFFSET FIN-OFFSET MSJ     ; guarda la ca
+				nt de caracteres que debe imprimir 
+ 2005 CD 07		     12	INT 7                 		    ; imprime
+ 2007 BB 00 15		     13	MOV BX, OFFSET NUM		    ; guarda la
+				 direc de num
+ 200A CD 06		     14	INT 6					    ; s
+				e ingresa desde teclado un numero en esa direc
+ 200C B0 01		     15	MOV AL, 1				    ;
+				mueve 1 a AL porque va a imprimir un solo caract
+				er 
+ 200E CD 07		     16	INT 7					    ; i
+				mprime
+ 2010 8A 0E 00 15	     17	MOV CL, NUM				    ; g
+				uarda el num en CL
+ 2014 CD 00		     18	INT 0					    ; t
+				ermina el programa
+			     19	END
+
+
+ S I M B O L O S:
+
+ Nombre:	Tipo:		Valor:
+
+ MSJ     	Mem. Byte	1000h
+ FIN     	Mem. Byte	1012h
+ NUM     	Mem. Byte	1500h

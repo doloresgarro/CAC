@@ -1,0 +1,47 @@
+
+								página: 1 
+
+ Listado Fuente: Ej3P2.LST
+ Programa Fuente en: Ej3P2.ASM
+ Fecha: Wed Apr 12 18:41:21 2023
+
+  Dir. Codigo maquina	 Linea 	 Codigo en lenguaje ensamble
+
+			      1	ORG 1000H
+ 1000 1A		      2	DIML DB 26             ; cant de veces que lo va
+				 a hacer porq son 26 letras
+			      3	
+			      4	ORG 2000H
+			      5	
+ 2000 B1 41		      6	MOV CL, 41H            ; A
+ 2002 B5 61		      7	MOV CH, 61H            ; a
+			      8	
+ 2004 BB 00 10		      9	MOV BX, OFFSET DIML    ; la direc que esta en BX
+				 contiene lo que voy a imprimir
+ 2007 B0 01		     10	MOV AL, 1              ; cantidad de caracteres 
+				que voy a imprimir 
+			     11	
+ 2009 88 0F		     12	LOOP:MOV [BX], CL      ; a lo que contiene BX le
+				 asigno la mayus
+ 200B CD 07		     13	INT 7                  ; imprime la mayus porq e
+				sta en la direc de BX
+ 200D FE C1		     14	INC CL 
+ 200F 88 2F		     15	MOV [BX], CH 	     ; a lo que contiene BX le 
+				pongo la minus
+ 2011 CD 07		     16	INT 7                  ; imprime la minus porq e
+				sta en la direc de BX
+ 2013 FE C5		     17	INC CH 
+ 2015 38 2E 00 10	     18	CMP DIML, CH           ; si CH llega a 26 para
+ 2019 75 EE		     19	JNZ LOOP
+			     20	
+			     21	
+ 201B CD 00		     22	INT 0
+			     23	END
+
+
+ S I M B O L O S:
+
+ Nombre:	Tipo:		Valor:
+
+ DIML    	Mem. Byte	1000h
+ LOOP    	Etiqueta	2009h
