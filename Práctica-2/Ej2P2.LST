@@ -1,0 +1,41 @@
+
+								página: 1 
+
+ Listado Fuente: Ej2P2.LST
+ Programa Fuente en: Ej2P2.ASM
+ Fecha: Wed Apr 12 14:56:33 2023
+
+  Dir. Codigo maquina	 Linea 	 Codigo en lenguaje ensamble
+
+			      1	; Memoria de Datos
+			      2	ORG 1000H
+ 1000 00		      3	INI DB 00H ; lo empiezo en 00h porq sino no me i
+				mprime el primer car en 01H
+ 1001 00		      4	FIN DB 255
+Error: Valor de expresion fuera de rango.
+			      5	
+			      6	ORG 2000H
+			      7	
+			      8	
+ 2000 8A 06 00 10	      9	MOV AL, INI 
+ 2004 8A 26 01 10	     10	MOV AH, FIN 
+			     11	
+ 2008 CD 07		     12	LOOP: INT 7
+ 200A FE C0		     13	INC AL 
+ 200C 3A E0		     14	CMP AH, AL
+ 200E 73 F8		     15	JNC LOOP ; si AL es 256 hay carry y sale
+			     16	
+ 2010 CD 00		     17	INT 0 ; para avisar que termino ???
+			     18	
+			     19	
+ 2012 F4		     20	HLT 
+			     21	END
+
+
+ S I M B O L O S:
+
+ Nombre:	Tipo:		Valor:
+
+ INI     	Mem. Byte	1000h
+ FIN     	Mem. Byte	1001h
+ LOOP    	Etiqueta	2008h
