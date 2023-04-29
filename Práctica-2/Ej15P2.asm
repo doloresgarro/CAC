@@ -1,4 +1,4 @@
-;Escribir un programa que implemente un conteo regresivo a partir de un valor ingresado desde el teclado. El conteo debe 
+;15) Escribir un programa que implemente un conteo regresivo a partir de un valor ingresado desde el teclado. El conteo debe 
 ;comenzar al presionarse la tecla F10. El tiempo transcurrido debe mostrarse en pantalla, actualizándose el valor cada segundo
 
 TIMER EQU 10H
@@ -64,8 +64,10 @@ IRET
 ORG 2000H 
 
 CLI
-MOV AL, 0FEH  ; 1111 1110
-OUT PIC+1, AL ; PIC + 1 = IMR
+
+; configuracion del PIC
+MOV AL, 0FCH  ; 1111 1100 acitvo timer y F10 1111 1100
+OUT PIC+1, AL ; PIC + 1 = IMR = 1111 1100
 
 MOV AL, N_CLK ; direc subrutina TIMER
 OUT PIC + 5, AL ; PIC + 5 = INT1
@@ -73,8 +75,9 @@ OUT PIC + 5, AL ; PIC + 5 = INT1
 MOV AL, N_F10 ; direc subrutina F10
 OUT PIC + 4, AL ; PIC + 4 = INT0
 
+; configuracion del TIMER
 MOV AL, 1     ; TIMER + 1 = COMP
-OUT TIMER + 1, AL  ;activo timer (no puede interrumpir, CLI y IMR no lo permiten);
+OUT TIMER + 1, AL  ; 
 
 MOV AL, 0     ;
 OUT TIMER, AL ;  TIMER = CONT
@@ -84,4 +87,3 @@ MOV AL, OFFSET FIN - OFFSET SEG
 STI 
 LAZO: JMP LAZO 
 END 
-
