@@ -1,0 +1,78 @@
+;Escribir un programa que solicite el ingreso de cinco caracteres por teclado y los almacene en memoria. Una vez 
+;ingresados, que los envíe a la impresora a través del HAND-SHAKE, en primer lugar tal cual fueron ingresados y a 
+;continuación en sentido inverso. Implementar dos versiones, una por consulta de estado y otra por interrupción, en lo 
+;que se refiere a la comunicación entre el HAND-SHAKE y el microprocesador.
+
+
+;VERSION INTERRUPCIÓN
+
+PIC EQU 20H
+HAND EQU 30H
+
+
+ORG 1000H
+CAR DB ?
+cantCar db 5
+N_HND db 10
+
+ORG 3000H
+
+RUT_HND: PUSH AX
+
+loop: MOV AL, [BX] 
+OUT HAND, AL   ; lo manda al buffer
+
+INC BX
+INC CL
+CMP CL, 5
+JNZ loop
+DEC BX    ; porq sino me imprime dos veces la s
+
+loop2: DEC BX
+
+MOV AL, [BX] 
+OUT HAND, AL   ; lo manda al buffer
+DEC CL
+JNZ loop2
+
+MOV AL, 20H   ; termina la interrupcion
+OUT PIC, AL 
+
+POP AX 
+IRET
+
+ORG 2000H
+
+CLI
+
+; configuracion del PIC
+MOV AL, 0FBH  ; 1111 1011 activa el HANDSHAKE
+OUT PIC+1, AL ; IMR 
+
+MOV AL, N_HND ; ID de la interrup
+OUT PIC+6, AL ; INT2
+
+; configuracion del HANDSHAKE
+MOV AL, 80H   ; 1000 0000
+OUT HAND + 1, AL; primer dig es 1 --> habilita interrupciones
+
+STI
+
+
+MOV BX, OFFSET CAR
+MOV CL, cantCar
+
+; los pone en memoria
+pp: INT 6
+MOV AL, [BX]   ; primer car 
+INC BX
+DEC CL
+JNZ pp
+
+; deshabilita interrupciones
+IN AL, HAND+1
+AND AL, 7FH
+OUT HAND+1, AL
+
+INT 0
+END

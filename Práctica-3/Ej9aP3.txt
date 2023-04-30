@@ -1,0 +1,74 @@
+;Escribir un programa que solicite el ingreso de cinco caracteres por teclado y los almacene en memoria. Una vez 
+;ingresados, que los envíe a la impresora a través del HAND-SHAKE, en primer lugar tal cual fueron ingresados y a 
+;continuación en sentido inverso. Implementar dos versiones, una por consulta de estado y otra por interrupción, en lo 
+;que se refiere a la comunicación entre el HAND-SHAKE y el microprocesador.
+
+;VERSION CONSULTA DE ESTADO
+HAND EQU 40H
+
+ORG 1000H
+
+CAR DB ?
+cantCar DB 5
+
+ORG 3000H
+POLL: IN AL, HAND+1  
+AND AL, 1
+JNZ POLL
+RET
+
+
+
+
+ORG 2000H
+
+IN AL, HAND+1     ; pone en AL es estado
+AND AL, 7FH       ; pone en 0 el estado
+OUT HAND+1, AL   
+
+MOV BX, OFFSET CAR
+MOV CL, cantCar
+
+
+
+; los pone en memoria
+LOOP: INT 6
+MOV AL, [BX]   ; primer car 
+INC BX
+DEC CL
+JNZ LOOP
+
+; los imprime
+MOV BX, OFFSET CAR
+
+loop1: PUSH BX 
+PUSH CX
+CALL POLL
+POP CX
+POP BX
+
+; si esta disponible lo manda al buffer
+MOV AL, [BX] 
+OUT HAND, AL   ; lo manda al buffer
+INC BX
+INC CL
+CMP CL, 5
+JNZ loop1
+DEC BX
+
+loop2: DEC BX
+PUSH BX 
+PUSH CX
+CALL POLL
+POP CX
+POP BX
+
+; si esta disponible lo manda al buffer
+MOV AL, [BX] 
+OUT HAND, AL   ; lo manda al buffer
+DEC CL
+JNZ loop2
+
+INT 0
+END
+

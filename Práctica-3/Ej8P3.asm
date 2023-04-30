@@ -28,7 +28,7 @@ MOV CL, OFFSET FIN-OFFSET MSJ
 CLI
 
 ; configuracion del PIC
-MOV AL, 0FBH  ; 1111 1011 actica el HANDSHAKE
+MOV AL, 0FBH  ; 1111 1011 activa el HANDSHAKE
 OUT PIC+1, AL ; IMR 
 
 MOV AL, N_HND ; ID de la interrup

@@ -1,0 +1,50 @@
+PIC EQU 20H 
+N_F10 EQU 10
+
+ORG 40
+IP_F10 DW RUT_F10
+
+ORG 1000H
+A DB 41H
+DIM_ABC DB 25
+
+ORG 3000H
+RUT_F10: PUSH AX 
+PUSH DX
+
+MOV AL, 1
+MOV BX, OFFSET A
+ADD [BX], CL 
+INT 7 
+
+MOV AL, 20H 
+OUT PIC, AL
+
+POP DX
+POP AX ; subrutina reusable
+
+IRET
+
+
+ORG 2000H  
+
+CLI 
+; configuracion del PIC
+MOV AL, 0FEH ; en binario es 1111 1110
+OUT PIC+1, AL ; IMR = 1111 1110 habilito interrup F10
+
+MOV AL, N_F10 ; ID de la interrup 
+OUT PIC+4, AL ; INT0 le mando el ID
+
+STI 
+
+
+MOV DL, DIM_ABC   ; dim del abecedario
+INICIALIZO_ABC: MOV CL, 0
+LAZO: CMP CL, DL
+JZ INICIALIZO_ABC 
+INC CL
+JMP LAZO ; bucle infinito
+
+
+END

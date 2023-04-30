@@ -1,0 +1,102 @@
+;Escribir un programa que solicite ingresar caracteres por teclado y que recién al presionar la tecla F10 los envíe a la impresora a través de la PIO.
+;No es necesario mostrar los caracteres en la pantalla. Ejecutar en configuración P1 C1 del simulador.
+
+PIC EQU 20H
+PIO EQU 30H
+
+
+ORG 40
+IP_F10 DW RUT_F10
+
+
+ORG 1000H
+CAR DB ?
+N_F10 db 10
+
+ORG 3000H 
+
+INI_IMP:MOV AL, 0FDH ; 1111 1101 --> 0 xq strobe es de salida y el busy es de entrada 
+ OUT PIO+2, AL ; indicar q es de entrada 
+ MOV AL, 0
+ OUT PIO+3, AL  ; para indicar de salida
+
+
+; pone strobe en 0
+IN AL, PIO            ; 
+AND AL, 0FDH          ; 1111 1101
+OUT PIO, AL 
+RET
+
+
+
+ORG 3100H
+RUT_F10: PUSH AX 
+PUSH DX
+
+; cosulta de estado
+POLL: IN AL, PIO
+AND AL, 1
+JNZ POLL
+
+MOV BX, OFFSET CAR
+LOOP: MOV AL, [BX]        ; copia el car a poner en el buffer 
+OUT PIO+1, AL       ; lo pone en PB y lo manda al buffer
+
+; STROBE
+PUSH AX          
+CALL PULSO
+POP AX
+
+INC BX
+DEC CL
+JNZ LOOP
+
+
+MOV AL, 20H 
+OUT PIC, AL
+
+POP DX
+POP AX ; subrutina reusable
+
+IRET
+
+
+ORG 4000H 
+ ; pone el strobe del PIO en 1
+ PULSO: IN AL, PIO ; PULSO 'STROBE'
+ OR AL, 02H ; 0000 0010 
+ OUT PIO, AL
+ ; pone el strobe del PIO en 0
+ IN AL, PIO
+ AND AL, 0FDH
+ OUT PIO, AL ; FIN PULSO
+ RET
+ 
+ ; PROGRAMA PRINCIPAL
+ORG 2000H
+
+CLI
+
+; configuracion del PIO
+PUSH AX
+CALL INI_IMP
+POP AX
+; configuracion del PIC
+MOV AL, 0FEH ; 1111 1110 --> activo F10
+OUT PIC + 1, AL
+MOV AL, N_F10   ; ID de interrup por tecla F10
+OUT PIC + 4, AL ; INT0 --> ID del vector de interrupciones
+
+
+STI
+
+MOV BX, OFFSET CAR ; direc de donde voy a leer
+MOV CL, 0 ; contador de letras leidas
+LAZO:INT 6
+INC CL 
+INC BX
+JMP LAZO
+
+
+INT 0
+END
