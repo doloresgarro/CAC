@@ -5,6 +5,7 @@
 
 
 ;VERSION INTERRUPCIÓN
+; no lo pude probar porq no me anda vonsim :((((
 
 PIC EQU 20H
 HAND EQU 30H
