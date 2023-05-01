@@ -1,89 +1,118 @@
 ;15) Escribir un programa que implemente un conteo regresivo a partir de un valor ingresado desde el teclado. El conteo debe 
 ;comenzar al presionarse la tecla F10. El tiempo transcurrido debe mostrarse en pantalla, actualizándose el valor cada segundo
-
-TIMER EQU 10H
-PIC EQU 20H
-EOI EQU 20H
-N_F10 EQU 9
-N_CLK EQU 10
-
-ORG 36
-IP_F10 DW RUT_F10 
-ORG 40 
-IP_CLK DW RUT_CLK
+TIMER EQU 10H 
+N_F10 EQU 10   ; ID interrupción F10
+N_CLK EQU 15   ; ID interrupción TIMER
+PIC EQU 20H 
 
 ORG 1000H
-SEG DB 30H
-SEG_NEXT DB 30H ; 0
-DB " "
-FIN DB ?
+NUM DB ?
+flag db 0
+
+SEG DB 30H  ; 1000h, 0
+SEG_NEXT   DB 30H  ; 1001h es la unidad. No le pone nombre xq no es necesario, 
+FIN DB ?    ; 1002h
+
+ORG 40 
+IP_F10 DW RUT_F10
+
+ORG 60
+IP_CLK DW RUT_CLK
 
 ORG 3000H
+
+; DESDE ACA HABILITO EL TIMER!!!!!!!!!
 RUT_F10: PUSH AX
-IN AL, PIC+1 ;traigo estado del IMR
-CMP AL, 0FCH ; verifico si esta habilitado el timer
-JZ DESHABILITAR ;si esta habilitado lo deshabilito
-MOV AL, 0FCH 
-OUT PIC+1, AL  ;si esta deshabilitado lo habilito (ahora timer puede interrumpir)
-JMP END_F10
-DESHABILITAR: MOV AL, 0FEH
-OUT PIC+1, AL
-END_F10: MOV AL, EOI
+PUSH CX 
+PUSH DX
+
+;tengo que deshabilitar porq al volver al prog principal no puede haber interrup por timer
+
+IN AL, PIC + 1   ; en AL pongo lo que contiene el IMR
+MOV DL, 0FCH     ; hago esto xq sino el preview no me deja comparar 
+CMP AL, DL
+JNZ habilitar
+
+MOV AL, 0FCH    ; 11111110-> deshabilito TIMER 
+OUT PIC + 1, AL  ; IMR = PIC + 1 
+JMP FIN_F10
+
+habilitar: MOV AL, DL
+OUT PIC + 1, AL
+
+
+FIN_F10: MOV AL, 20H
 OUT PIC, AL
+
+POP DX
+POP CX
+POP AX
+
+IRET
+
+
+ORG 3500H
+
+RUT_CLK: PUSH AX 
+
+MOV SEG, CL       ; muevo al segundo el num ingresado
+INT 7             ; lo imprime
+DEC SEG           ; decremento el seg 
+
+LOOP: CMP SEG, 30H ; si es 0, termino la cuenta regresiva
+JZ SALTO           
+RESET: INT 7       ; imprimo
+DEC SEG
+JMP LOOP
+
+SALTO: MOV AL, 0FEH ;1111 1110 -> desactivo timer
+OUT PIC+1, AL  ; IMR = PIC + 1
+
+MOV AL, 0  ; CONT = 0
+OUT TIMER, AL
+
+MOV AL, 20H ; fin de interrupcion
+OUT PIC, AL
+
 POP AX
 IRET
 
 
-RUT_CLK: PUSH AX
-; SEG = 0, segundo digito del seg
-; SEG_NEXT = 0, primer digito del seg
-INC SEG_NEXT ; 1
-CMP SEG_NEXT, 3AH ; si pasa el digito (9)
-JNZ RESET ; si son iguales, imprime ult dig
 
-MOV SEG_NEXT, 30H ; le pongo 0
-INC SEG ; 1 
-CMP SEG, 33H ; comparo con 3 para ver si ya llego a 30 segs
-JNZ RESET ; si no son iguales, todavia no llego a 30 entonces imprime
 
-INT 7 ;si llego a 30 segundos
-MOV SEG, 30H ; 0
-MOV AL, 0FEH ;deshabilito timer
-OUT PIC+1, AL 
-JMP ELSE 
+ORG 2000H
 
-RESET: INT 7 
-ELSE: MOV AL, 0
+CLI ; habilito interrupciones
 
-OUT TIMER, AL
-MOV AL, EOI
-OUT PIC, AL 
-POP AX 
-IRET 
+;configuracion del PIC 
+MOV AL, 0FEH     ; 11111110-> habilito F10, TIMER desde subrutina
+OUT PIC + 1, AL  ; IMR = PIC + 1 
 
-ORG 2000H 
+;configuracion de F10 
+MOV AL, N_F10    ; mando ID de la interrupción por F10
+OUT PIC + 4, AL  ; INT0 = PIC + 4
 
-CLI
+;configuracion del TIMER 
+MOV AL, 1        ; cada un seg muestro en pantalla el tiempo 
+OUT TIMER + 1, AL  ; PIC + 1 = COMP 
 
-; configuracion del PIC
-MOV AL, 0FCH  ; 1111 1100 acitvo timer y F10 1111 1100
-OUT PIC+1, AL ; PIC + 1 = IMR = 1111 1100
+MOV AL, 0
+OUT TIMER, AL      ; PIC = CONT
 
-MOV AL, N_CLK ; direc subrutina TIMER
-OUT PIC + 5, AL ; PIC + 5 = INT1
+MOV AL, N_CLK    ; mando ID de la interrupción por TIMER
+OUT PIC + 5, AL           ; INT1 = PIC + 5
 
-MOV AL, N_F10 ; direc subrutina F10
-OUT PIC + 4, AL ; PIC + 4 = INT0
+STI
 
-; configuracion del TIMER
-MOV AL, 1     ; TIMER + 1 = COMP
-OUT TIMER + 1, AL  ; 
+MOV BX, OFFSET NUM
+INT 6
+MOV CL, [BX]
 
-MOV AL, 0     ;
-OUT TIMER, AL ;  TIMER = CONT
+MOV AL, OFFSET FIN - OFFSET SEG ; imprime 2 caracteres 
+MOV BX, OFFSET SEG     ; muevo el num ingresado a CH
 
-MOV BX, OFFSET SEG ;cargo direccion de segundos para INT 7
-MOV AL, OFFSET FIN - OFFSET SEG 
-STI 
-LAZO: JMP LAZO 
-END 
+
+LAZO: JMP LAZO
+
+INT 0 
+END
