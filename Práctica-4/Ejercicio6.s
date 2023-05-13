@@ -22,7 +22,7 @@ dadd r4, r0, r0
 
 bne r1, r2, sigue            ; si r1 distinto r2
 daddi r4, r4, 1              ; si son iguales sumo 1 a la cantidad
-sigue: bne r1, r3, salta     ; si r1 = r3
+sigue: bne r1, r3, salta     ; si r1 distinto r3
 daddi r4, r4, 1              ; si son iguales sumo 1 a la cantidad
 salta: bne r2, r3, FIN       ; si r2 disitinto r3
 daddi r4, r4, 1              ; si son iguales sumo 1 a la cantidad
