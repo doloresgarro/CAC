@@ -15,3 +15,8 @@ loop: dsll r1, r1, 1
 daddi r2, r2, -1
 bnez r2, loop
 halt
+
+
+; guardamos en r5 el valor
+; lo almacenamos en memoria con sd
+; avanzamos en la tabla con otro registro
