@@ -13,7 +13,6 @@ res: .word 0
 dadd r1, r0, r0    ;
 ld r2, num1(r0)    ; pongo en r2 el num 
 ld r3, num2(r0)	 ; pongo en r3 la cant de veces q lo voy a multiplicar
-;daddi r4, r4, 1    ; para comparar con la cant de veces q quiero multiplicar
 
 loop: dadd r1, r1, r2 ; al num le sumo el mismo num
 daddi r3, r3, -1      ; disminuyo cant de veces q quiero multiplicar
