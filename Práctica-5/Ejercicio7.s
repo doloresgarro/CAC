@@ -13,23 +13,33 @@ dimL: .word 5
 result: .word 0
 
 .code ; o .text? 
+
+; PARÁMETROS
 ld $a0, M($0)
-ld $a1, tabla($0)
-ld $a2, dimL($0)
+daddi $a1, $0, tabla        ; le paso la direc de la cadena
+ld $a2, dimL($0)            ; le pasamos DIML 
 
 jal MAYORES
 sd $v0, result($0)
 halt
 
 ; SUBRUTINA
-MAYORES: dadd $v0, $0, $0
 
-loop: slt $t0, $a0, $a1      ; si M < elem --> $t1 = 1
-beqz $t1, salta              ; si $t1 = 0 salta 
+MAYORES: dadd $s0, $a1, $zero  ; para no perder la direc de tabla
+
+loop: ld $a1, 0($s0)         ; guardo elem de tabla
+
+slt $t0, $a0, $a1            ; si M < elem --> $t0 = 1
+beqz $t0, salta              ; si $t1 = 0 salta 
 daddi $v0, $v0, 1            ; si $t1 = 1 --> inc contador 
-salta: daddi $a1, $a1, 1  
+
+salta: daddi $s0, $s0, 8     ; avanzo en tabla  
 ld $a1, tabla($a1)           ; avanzo en tabla
 daddi $a2, $a2, -1           ; disminuyo dimL
 bnez $a2, loop               ; si dimL no es 0 --> loop  
 
 jr $ra                        ; ret
+
+
+
+
