@@ -40,15 +40,8 @@ daddi $t5, $t5, 1           ; voy inc 1 a la direc de ingresada
 
 jr $ra
 
-;Si las dos cadenas son iguales entre si, la subrutina llamada 
-;respuesta mostrará el texto “Bienvenido” en la salida estándar del 
-;simulador (ventana Terminal). En cambio, si las cadenas no son 
-;iguales, la subrutina deberá mostrar “ERROR” y solicitar 
-;nuevamente el ingreso de la clave.
 
-COMPARAR: 
-
-daddi $t0, $0, clave
+COMPARAR: daddi $t0, $0, clave
 daddi $t1, $0, ingresada
 dadd $t2, $0, $0
 daddi $t4, $t4, 4
