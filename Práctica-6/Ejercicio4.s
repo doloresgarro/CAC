@@ -15,7 +15,7 @@ lwu $s1, DATA ($0)
 daddi $t3, $0, ingresada   ; paso direc de ingresada a $t3
 
 dadd $t5, $0, $0
-daddi $t0, $0, 4       ; cant de veces q voy a llamar a ingreso
+daddi $t0, $0, 4        ; cant de veces q voy a llamar a ingreso
 LOOP: jal INGRESO
 daddi $t0, $t0, -1
 bnez $t0, LOOP  ; si ya leyó 4 cars va a comparar las claves
