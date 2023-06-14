@@ -14,13 +14,13 @@ lwu $s1, DATA ($0)
 
 daddi $t3, $0, ingresada   ; paso direc de ingresada a $t3
 
-
+dadd $t5, $0, $0
 daddi $t0, $0, 4       ; cant de veces q voy a llamar a ingreso
-LOOP: j INGRESO
+LOOP: jal INGRESO
 daddi $t0, $t0, -1
 bnez $t0, LOOP  ; si ya leyó 4 cars va a comparar las claves
 
-salta: j COMPARAR
+salta: jal COMPARAR
 
 HALT
 
@@ -35,7 +35,7 @@ sd $t2, 0($s0)             ; CONTROL = 9 --> lee un car
 lbu $t4, 0($s1)             ; guardo en $t4 num q ingrese
 
 sb $t4, ingresada($t5)   
-daddi $t5, $0, 1           ; voy inc 1 a la direc de ingresada
+daddi $t5, $t5, 1           ; voy inc 1 a la direc de ingresada
 
 
 jr $ra
