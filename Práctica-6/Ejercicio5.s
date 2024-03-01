@@ -35,6 +35,13 @@ ld $t1, 0($s1)           ; en $t1 = dato ingresado (exponente)
 ; $t1 --> exponente
 jal a_la_potencia
 
+;dadd $v0, $0, f1         ; paso resultado a $v0
+s.d f0, 0($s1)           ; DATA = result
+
+daddi $t0, $0, 3         
+sd $t0, 0($s0)           ; CONTROL = 3 --> imprime num flotante
+
+
 halt
 
 
@@ -47,11 +54,6 @@ LOOP: mul.d f0, f0, f1
 daddi $t1, $t1, -1
 bnez $t1, LOOP      
 
-;dadd $v0, $0, f1         ; paso resultado a $v0
-s.d f0, 0($s1)           ; DATA = result
-
-daddi $t0, $0, 3         
-sd $t0, 0($s0)           ; CONTROL = 3 --> imprime num flotante
 
 FIN: jr $ra 
 
